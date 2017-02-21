@@ -370,6 +370,10 @@ if ($action eq "base") {
     print "<p>You are anonymous, but you can also <a href=\"rwb.pl?act=login\">login</a></p>";
   } else {
     print "<p>You are logged in as $user and can do the following:</p>";
+    print "<input type=\"checkbox\" ID=\"Committee\" value=\"Committee\"> View Committee Data<br>";
+    print "<input type=\"checkbox\" ID=\"Candidate\" value=\"Candidate\"> View Candidate Data<br>";
+    print "<input type=\"checkbox\" ID=\"Individual\" value=\"Individual\">View Individual Data<br>";
+    print "<input type=\"checkbox\" ID=\"Opinion\" value=\"Opinion\">View Opinion Data<br>";
     if (UserCan($user,"give-opinion-data")) {
       print "<p><a href=\"rwb.pl?act=give-opinion-data\">Give Opinion Of Current Location</a></p>";
     }
