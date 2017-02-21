@@ -97,10 +97,21 @@ UpdateMap = function() {
 // Note that there additional categories here that are 
 // commented out...  Those might help with the project...
 //
-	UpdateMapById("committee_data","COMMITTEE");
-	UpdateMapById("candidate_data","CANDIDATE");
-	UpdateMapById("individual_data", "INDIVIDUAL");
-	UpdateMapById("opinion_data","OPINION");
+	if (document.getElementById("Committee").checked) {
+		UpdateMapById("committee_data","COMMITTEE");
+	}
+
+	if (document.getElementById("Candidate").checked) {
+		UpdateMapById("candidate_data","CANDIDATE");
+	}
+
+	if (document.getElementById("Individual").checked) {
+		UpdateMapById("individual_data", "INDIVIDUAL");
+	}
+
+	if (document.getElementById("Opinion").checked) {
+		UpdateMapById("opinion_data","OPINION");
+	}
 
 // When we're done with the map update, we mark the color division as
 // Ready.

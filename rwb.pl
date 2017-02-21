@@ -370,10 +370,12 @@ if ($action eq "base") {
     print "<p>You are anonymous, but you can also <a href=\"rwb.pl?act=login\">login</a></p>";
   } else {
     print "<p>You are logged in as $user and can do the following:</p>";
-    print "<input type=\"checkbox\" ID=\"Committee\" value=\"Committee\"> View Committee Data<br>";
-    print "<input type=\"checkbox\" ID=\"Candidate\" value=\"Candidate\"> View Candidate Data<br>";
-    print "<input type=\"checkbox\" ID=\"Individual\" value=\"Individual\">View Individual Data<br>";
-    print "<input type=\"checkbox\" ID=\"Opinion\" value=\"Opinion\">View Opinion Data<br>";
+    print "<form>";
+    print "<input type=\"checkbox\" id=\"Committee\" value=\"Committee\"><label for \"Committee\">View Committee Data</label><br>";
+    print "<input type=\"checkbox\" id=\"Candidate\" value=\"Candidate\"><label for \"Candidate\">View Candidate Data</label><br>";
+    print "<input type=\"checkbox\" id=\"Individual\" value=\"Individual\"><label for \"Individual\">View Individual Data</label><br>";
+    print "<input type=\"checkbox\" id=\"Opinion\" value=\"Opinion\"><label for \"Opinion\">View Opinion Data</label><br>";
+    print "</form>";
     if (UserCan($user,"give-opinion-data")) {
       print "<p><a href=\"rwb.pl?act=give-opinion-data\">Give Opinion Of Current Location</a></p>";
     }
