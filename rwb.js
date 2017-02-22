@@ -166,22 +166,32 @@ ViewShift = function() {
 // This *initiates* the request back to the server.  When it is done,
 // the browser will call us back at the function NewData (given above)
 
+//what field should only consist of entities that are checked
 	var what = "";
 	if (document.getElementById("Committee").checked) {
 		what = what + "committees,";
 	}
-
 	if (document.getElementById("Candidate").checked) {
 		what = what + "candidates,";
 	}
-
 	if (document.getElementById("Individual").checked) {
 		what = what + "individuals,";
 	}
-
 	if (document.getElementById("Opinion").checked) {
 		what = what + "opinions,";
 	}
+	//making the cycle field only consist of cycles that are checked
+	var cycles = "";
+	var allCycles = document.getElementsByName("allCycles")
+	for (var i = 0; i < allCycles.length; i++){
+		if (allCycles[i].checked){
+			console.log("generic cycle:" + allCycles[i]);
+			console.log("checked:" + allCycles[i].checked);
+			cycles = cycles + allCycles[i].value + ",";
+		}
+	}
+	console.log("potato");
+	console.log("value of cycles" + cycles);
 	$.get("rwb.pl",
 		{
 			act:	"near",
@@ -191,6 +201,8 @@ ViewShift = function() {
 			longsw:	sw.lng(),
 			format:	"raw",
 			what:	what,
+			cycles: cycles,
+
 		}, NewData);
 },
 

@@ -383,11 +383,9 @@ if ($action eq "base") {
 #make a form for all the cycles
     print"<p>AY SON PICK FROM DEEZ CYCLES </p>";
     print "<form>";
-  #  print "<input type=\"checkbox\" id=\"8990\" value=\"8990\"><label for \"8990\">8990</label><br>";
     my @cyclearray = CycleArray();
     foreach(@cyclearray){
-      print "<p>$_\n</p>";
-      print "<input type=\"checkbox\" id=$_ value=$_><label for $_>$_</label><br>";
+      print "<input type=\"checkbox\" name = \"allCycles\" id=$_ value=$_><label for $_>$_</label><br>";
     }
     print "</form>";
 
