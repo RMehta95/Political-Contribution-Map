@@ -192,6 +192,7 @@ ViewShift = function() {
 	}
 	console.log("potato");
 	console.log("value of cycles" + cycles);
+	console.log("value of what" + what);
 	$.get("rwb.pl",
 		{
 			act:	"near",

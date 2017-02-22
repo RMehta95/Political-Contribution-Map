@@ -433,11 +433,18 @@ if ($action eq "near") {
   my $longsw = param("longsw");
   my $whatparam = param("what");
   my $format = param("format");
-  my $cycle = param("cycle");
   my %what;
+  my $cycle = param("cycles");
 
   $format = "table" if !defined($format);
-  $cycle = "1112" if !defined($cycle);
+  print "LOOK HERE" + $cycle;
+  if (!defined($cycle)) {
+    $cycle = "";
+  }
+  else {
+    $cycle = substr($cycle, 0, -1);
+  }
+#  $cycle = "1112" if !defined($cycle);
 
   if (!defined($whatparam) || $whatparam eq "all") {
     %what = ( committees => 1,
@@ -494,6 +501,9 @@ if ($action eq "near") {
 
 if ($action eq "invite-user") {
   print h2("Invite User Functionality Is Unimplemented");
+  print "<form>";
+  print "<input type=\"email\" name=\"email\">";
+  print "</form>";
 }
 
 if ($action eq "give-opinion-data") {
