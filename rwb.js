@@ -185,14 +185,10 @@ ViewShift = function() {
 	var allCycles = document.getElementsByName("allCycles")
 	for (var i = 0; i < allCycles.length; i++){
 		if (allCycles[i].checked){
-			console.log("generic cycle:" + allCycles[i]);
-			console.log("checked:" + allCycles[i].checked);
 			cycles = cycles + allCycles[i].value + ",";
 		}
 	}
-	console.log("potato");
-	console.log("value of cycles" + cycles);
-	console.log("value of what" + what);
+
 	$.get("rwb.pl",
 		{
 			act:	"near",
