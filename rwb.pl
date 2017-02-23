@@ -537,7 +537,7 @@ if ($action eq "give-opinion-data") {
     my $error;
       $error=GiveOpinion($lat,$long,$opinion,$user);
     if ($error) {
-      print "Can't add user because: $error";
+      print "Can't give opinion because: $error";
     } 
     else {
       print "$user has entered opinion $opinion at latitude $lat and longitude $long";
