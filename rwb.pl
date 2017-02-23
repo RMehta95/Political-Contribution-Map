@@ -513,13 +513,16 @@ if ($action eq "give-opinion-data") {
     h2('Give Opinion of Your Location'),
       "-1 for Republician, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
       p,
-      hidden(-name=>'run',-default=>['1']),
-      hidden(-name=>'act',-default=>['give-opinion-data']),
-      
-      "<input type=\"hidden\" name=\"lat\" id=\"lat\" />","<input type=\"hidden\" name=\"long\" id=\"long\" />",
-      "<script> navigator.geolocation.getCurrentPosition(Now);
-      function Now(pos){ document.getElementById(\"lat\").value = pos.coords.latitude;
-             document.getElementById(\"long\").value = pos.coords.longitude;}
+      hidden(-name=>'run', -default=>['1']),
+      hidden(-name=>'act', -default=>['give-opinion-data']),
+      hidden(-name=>'lat', -id=>'lat'),
+      hidden(-name=>'long', -id=>'long'),
+      "<script language='JavaScript' type='text/JavaScript'> 
+          navigator.geolocation.getCurrentPosition(Now);
+          function Now(pos){ 
+              document.getElementById(\"lat\").value = pos.coords.latitude;
+              document.getElementById(\"long\").value = pos.coords.longitude;
+            }
       </script>",
     submit,
     end_form,
@@ -530,8 +533,17 @@ if ($action eq "give-opinion-data") {
     my $long = param("long");
     my $opinion = param("opinion");
     
-    eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
-    print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
+  #  eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
+    my $error;
+      $error=GiveOpinion($lat,$long,$opinion,$user);
+    if ($error) {
+      print "Can't add user because: $error";
+    } 
+    else {
+      print "$user has entered opinion $opinion at latitude $lat and longitude $long";
+    }
+
+ #   print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
 }
@@ -932,6 +944,15 @@ sub UserPermTable {
 		     @rows),$@);
   }
 }
+
+sub GiveOpinion {
+  eval {
+    ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef, @_)
+  };
+  return $@;
+}
+
+
 
 #
 # Add a user
