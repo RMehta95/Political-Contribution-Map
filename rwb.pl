@@ -500,14 +500,35 @@ if ($action eq "near") {
 
 
 if ($action eq "invite-user") {
-  print h2("Invite User Functionality Is Unimplemented");
-  print "<form>";
-  print "<input type=\"email\" name=\"email\">";
-  print "</form>";
+  print h2("unimplemented");
+
+
 }
 
+
+# Provide opinion data for the user that is logged in
 if ($action eq "give-opinion-data") {
-  print h2("Giving Location Opinion Data Is Unimplemented");
+#  print h2("Giving Location Opinion Data Is Unimplemented");
+  if (!$run) {
+  print start_form(-name=>'GiveOpinion'),
+    h2('Give Opinion of Your Location'),
+      "-1 for Republician, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
+      p,
+      hidden(-name=>'run',-default=>['1']),
+      hidden(-name=>'act',-default=>['give-opinion-data']),
+    submit,
+    end_form,
+    hr;
+  }
+  else {
+    my $lat = param("lat");
+    my $long = param("long");
+    my $opinion = param("opinion");
+    
+  #  eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
+    print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
+    print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
+  }
 }
 
 if ($action eq "give-cs-ind-data") {
