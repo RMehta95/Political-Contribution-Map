@@ -525,7 +525,7 @@ if ($action eq "give-opinion-data") {
     my $long = param("long");
     my $opinion = param("opinion");
     
-  #  eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
+    eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
     print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
