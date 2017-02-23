@@ -77,8 +77,8 @@ use Time::ParseDate;
 #
 # You need to override these for access to your database
 #
-my $dbuser="ril444";
-my $dbpasswd="zfeX4fJ9w";
+my $dbuser="jam697";
+my $dbpasswd="zcg32gtOI";
 
 
 #
@@ -508,7 +508,6 @@ if ($action eq "invite-user") {
 
 # Provide opinion data for the user that is logged in
 if ($action eq "give-opinion-data") {
-#  print h2("Giving Location Opinion Data Is Unimplemented");
   if (!$run) {
   print start_form(-name=>'GiveOpinion'),
     h2('Give Opinion of Your Location'),
@@ -516,10 +515,16 @@ if ($action eq "give-opinion-data") {
       p,
       hidden(-name=>'run',-default=>['1']),
       hidden(-name=>'act',-default=>['give-opinion-data']),
+      
+      "<input type=\"hidden\" name=\"lat\" id=\"lat\" />","<input type=\"hidden\" name=\"long\" id=\"long\" />",
+      "<script> navigator.geolocation.getCurrentPosition(Now);
+      function Now(pos){ document.getElementById(\"lat\").value = pos.coords.latitude;
+             document.getElementById(\"long\").value = pos.coords.longitude;}
+      </script>",
     submit,
     end_form,
     hr;
-  }
+    }
   else {
     my $lat = param("lat");
     my $long = param("long");
@@ -752,16 +757,18 @@ print end_html;
 # The main line is finished at this point.
 # The remainder includes utilty and other functions
 #
-#subroutine to return an array that contains all the possible cycle values
 
+
+#subroutine to return an array that contains all the possible cycle values
 sub CycleArray{
   my @cyclearray;
   eval{
     @cyclearray = ExecSQL($dbuser, $dbpasswd, "select distinct cycle from cs339.committee_master", "COL");
   };
   return @cyclearray;
-
 }
+
+
 
 
 #
