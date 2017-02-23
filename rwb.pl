@@ -378,11 +378,9 @@ if ($action eq "base") {
     print "<input type=\"checkbox\" id=\"Candidate\" value=\"Candidate\"><label for \"Candidate\">View Candidate Data</label><br>";
     print "<input type=\"checkbox\" id=\"Individual\" value=\"Individual\"><label for \"Individual\">View Individual Data</label><br>";
     print "<input type=\"checkbox\" id=\"Opinion\" value=\"Opinion\"><label for \"Opinion\">View Opinion Data</label><br>";
-    print "</form>";
 
 #make a form for all the cycles
-    print"<p>AY SON PICK FROM DEEZ CYCLES </p>";
-    print "<form>";
+    print"<p>Select Election Cycle(s) </p>";
     my @cyclearray = CycleArray();
     foreach(@cyclearray){
       print "<input type=\"checkbox\" name = \"allCycles\" id=$_ value=$_><label for $_>$_</label><br>";
@@ -511,7 +509,7 @@ if ($action eq "give-opinion-data") {
   if (!$run) {
   print start_form(-name=>'GiveOpinion'),
     h2('Give Opinion of Your Location'),
-      "-1 for Republician, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
+      "-1 for Republican, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
       p,
       hidden(-name=>'run', -default=>['1']),
       hidden(-name=>'act', -default=>['give-opinion-data']),
