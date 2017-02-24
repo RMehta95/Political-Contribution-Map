@@ -534,7 +534,7 @@ if ($action eq "invite-user") {
           my $to = param('email');
           my $from = 'rcm412@murphy.wot.eecs.northwestern.edu';
           my $subject = 'Invitation to Register an Account';
-          my $url = 'DEEZ NUTS'; #int(rand(1000000));
+          my $url = rand(100000);
           my $message = 'Please register your new account at ' . $url;
           my @restrict_permissions = param('restrict_permissions');
           my $invitation_permissions = join(',',@restrict_permissions);
