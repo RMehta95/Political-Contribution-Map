@@ -498,50 +498,108 @@ if ($action eq "near") {
 
 
 if ($action eq "invite-user") {
-  print h2("unimplemented");
+  if (!UserCan($user,"invite-users")) {
+     print h2('You do not have the required permissions to invite users.'); }
+  else {
+    if (!$run) {
+          my @permissions = ('manage-users','invite-users','add-users','query-fec-data','query-cs-ind-data','query-opinion-data','give-cs-ind-data','give-opinion-data');
+          for my $i (0..@permissions) {
+            if (!UserCan($user,$permissions[i])) {
+              splice(@permissions,$i,1);
+            }
+          }
+          print start_form(-name=>'InviteUser',),#-action=>'/cgi/sendmail.pl',method=>'POST'),
+          h2('Invite User'),
+          "Name: ", textfield(-name=>'name'),
+          p,
+          "Email: ", textfield(-name=>'email'),
+          p,
+          "Permissions:",
+          br,
+          checkbox_group(
+            -name=>'restrict_permissions', 
+            -values=>\@permissions,
+            -linebreak=>'true',
+            ),
+          hidden(-name=>'run',-default=>['1']),
+          hidden(-name=>'act',-default=>['invite-user']),
+          br,
+          submit,
+          end_form,
+          hr;
+    } 
+    else {
+          #!/usr/bin/perl
+          my $name = param('name');
+          my $to = param('email');
+          my $from = 'rcm412@murphy.wot.eecs.northwestern.edu';
+          my $subject = 'Invitation to Register an Account';
+          my $url = 'DEEZ NUTS'; #int(rand(1000000));
+          my $message = 'Please register your new account at ' . $url;
+          my @restrict_permissions = param('restrict_permissions');
+          my $invitation_permissions = join(',',@restrict_permissions);
+           
+          open(MAIL, "|/usr/sbin/sendmail -t");
+           
+          # Email Header
+          print MAIL "To: $to\n";
+          print MAIL "From: $from\n";
+          print MAIL "Subject: $subject\n\n";
+          # Email Body
+          print MAIL $message;
 
-
+          close(MAIL);
+          print "Email Sent Successfully\n";
+    
+          # my $error;
+          # $error=UserInvite($name,$email,$from,$to,$address,$subject,$body,$user);
+          # if ($error) {
+          #   print "Can't invite user because: $error";
+          # } else {
+          #   print "Invited user $name $email\n";
+          # }
+    }
+    print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
+  }
 }
 
 
 # Provide opinion data for the user that is logged in
 if ($action eq "give-opinion-data") {
   if (!$run) {
-  print start_form(-name=>'GiveOpinion'),
-    h2('Give Opinion of Your Location'),
-      "-1 for Republican, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
+    print start_form(-name=>'GiveOpinion'),
+      h2('Give Opinion from Your Location'),
+        "-1 for Republican, 0 for Neutral, 1 for Democrat: ", 
+      textfield(-name=>'opinion'),
       p,
       hidden(-name=>'run', -default=>['1']),
       hidden(-name=>'act', -default=>['give-opinion-data']),
       hidden(-name=>'lat', -id=>'lat'),
       hidden(-name=>'long', -id=>'long'),
-      "<script language='JavaScript' type='text/JavaScript'> 
-          navigator.geolocation.getCurrentPosition(Now);
-          function Now(pos){ 
-              document.getElementById(\"lat\").value = pos.coords.latitude;
-              document.getElementById(\"long\").value = pos.coords.longitude;
-            }
+      "<script language=\"JavaScript\" type=\"text/JavaScript\"> 
+          if(navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(Now);
+              function Now(pos){
+                document.getElementById(\"lat\").value = pos.coords.latitude;
+                document.getElementById(\"long\").value = pos.coords.longitude;
+              } 
+          }
       </script>",
-    submit,
-    end_form,
-    hr;
-    }
+      submit,
+      end_form,
+      hr;
+      }
   else {
     my $lat = param("lat");
     my $long = param("long");
     my $opinion = param("opinion");
-    
-  #  eval {ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef,$lat,$long,$opinion,$user);  }; 
-    my $error;
-      $error=GiveOpinion($lat,$long,$opinion,$user);
+    my $error=GiveOpinion($lat,$long,$opinion,$user);
     if ($error) {
       print "Can't give opinion because: $error";
     } 
     else {
       print "$user has entered opinion $opinion at latitude $lat and longitude $long";
     }
-
- #   print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
 }
@@ -553,7 +611,7 @@ if ($action eq "give-cs-ind-data") {
 #
 # ADD-USER
 #
-# User Add functionaltiy
+# User Add functionality
 #
 #
 #
@@ -944,8 +1002,9 @@ sub UserPermTable {
 }
 
 sub GiveOpinion {
+  my @rows;
   eval {
-    ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef, @_)
+    @rows = ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef, @_)
   };
   return $@;
 }
