@@ -96,12 +96,14 @@ my $cookiename="RWBSession";
 # And another cookie to preserve the debug state
 #
 my $debugcookiename="RWBDebug";
+my $locationcookie="Location";
 
 #
 # Get the session input and debug cookies, if any
 #
 my $inputcookiecontent = cookie($cookiename);
 my $inputdebugcookiecontent = cookie($debugcookiename);
+my $mylocationcookiecontent = cookie($locationcookie);
 
 #
 # Will be filled in as we process the cookies and paramters
@@ -567,39 +569,33 @@ if ($action eq "invite-user") {
 # Provide opinion data for the user that is logged in
 if ($action eq "give-opinion-data") {
   if (!$run) {
-    print start_form(-name=>'GiveOpinion'),
-      h2('Give Opinion from Your Location'),
-        "-1 for Republican, 0 for Neutral, 1 for Democrat: ", 
-      textfield(-name=>'opinion'),
+  print start_form(-name=>'GiveOpinion'),
+    h2('Give Opinion of Your Location'),
+      "-1 for Republican, 0 for Neutral, 1 for Democrat: ", textfield(-name=>'opinion'),
       p,
       hidden(-name=>'run', -default=>['1']),
       hidden(-name=>'act', -default=>['give-opinion-data']),
-      hidden(-name=>'lat', -id=>'lat'),
-      hidden(-name=>'long', -id=>'long'),
-      "<script language=\"JavaScript\" type=\"text/JavaScript\"> 
-          if(navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(Now);
-              function Now(pos){
-                document.getElementById(\"lat\").value = pos.coords.latitude;
-                document.getElementById(\"long\").value = pos.coords.longitude;
-              } 
-          }
-      </script>",
-      submit,
-      end_form,
-      hr;
-      }
+    submit,
+    end_form,
+    hr;
+    }
   else {
-    my $lat = param("lat");
-    my $long = param("long");
+    my $lat; 
+    my $long; 
+    if (defined($mylocationcookiecontent)) { 
+      ($lat,$long) = split(/\//,$mylocationcookiecontent);
+    }
     my $opinion = param("opinion");
-    my $error=GiveOpinion($lat,$long,$opinion,$user);
+    my $error;
+      $error=GiveOpinion($lat,$long,$opinion,$user);
     if ($error) {
       print "Can't give opinion because: $error";
     } 
     else {
       print "$user has entered opinion $opinion at latitude $lat and longitude $long";
     }
+
+ #   print h2("$user has entered opinion $opinion at latitude $lat and longitude $long");
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
 }
@@ -1002,9 +998,8 @@ sub UserPermTable {
 }
 
 sub GiveOpinion {
-  my @rows;
   eval {
-    @rows = ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef, @_)
+    ExecSQL($dbuser, $dbpasswd, "insert into rwb_opinions (latitude,longitude,color,submitter) values (?,?,?,?)",undef, @_)
   };
   return $@;
 }

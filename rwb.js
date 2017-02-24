@@ -68,6 +68,8 @@ UpdateMapById = function(id, tag) {
 	}
 },
 
+
+
 //
 // ClearMarkers just removes the existing data markers from
 // the map and from the list of markers.
@@ -241,12 +243,14 @@ Start = function(location) {
 			zoom: 16,
 			center: new google.maps.LatLng(lat,long),
 			mapTypeId: google.maps.MapTypeId.HYBRID
-		});
 
+		});
 // create a marker for the user's location and place it on the map
 	usermark = new google.maps.Marker({ map:map,
 		position: new google.maps.LatLng(lat,long),
 		title: "You are here"});
+	document.cookie = 'Location='+lat+'/'+long;
+
 
 // clear list of markers we added to map (none yet)
 // these markers are committees, candidates, etc
