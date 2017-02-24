@@ -96,12 +96,14 @@ my $cookiename="RWBSession";
 # And another cookie to preserve the debug state
 #
 my $debugcookiename="RWBDebug";
+my $locationcookie="Location";
 
 #
 # Get the session input and debug cookies, if any
 #
 my $inputcookiecontent = cookie($cookiename);
 my $inputdebugcookiecontent = cookie($debugcookiename);
+my $mylocationcookiecontent = cookie($locationcookie);
 
 #
 # Will be filled in as we process the cookies and paramters
@@ -574,6 +576,7 @@ if ($action eq "give-opinion-data") {
       p,
       hidden(-name=>'run', -default=>['1']),
       hidden(-name=>'act', -default=>['give-opinion-data']),
+<<<<<<< HEAD
       hidden(-name=>'lat', -id=>'lat'),
       hidden(-name=>'long', -id=>'long'),
       "<script language=\"JavaScript\" type=\"text/JavaScript\"> 
@@ -589,11 +592,25 @@ if ($action eq "give-opinion-data") {
       end_form,
       hr;
       }
+=======
+    submit,
+    end_form,
+    hr;
+    }
+>>>>>>> 886cc1d690b2efe158a3aa1fe0483ae1fcbeeb31
   else {
-    my $lat = param("lat");
-    my $long = param("long");
+    my $lat; 
+    my $long; 
+    if (defined($mylocationcookiecontent)) { 
+      ($lat,$long) = split(/\//,$mylocationcookiecontent);
+    }
     my $opinion = param("opinion");
+<<<<<<< HEAD
     my $error=GiveOpinion($lat,$long,$opinion,$user);
+=======
+    my $error;
+      $error=GiveOpinion($lat,$long,$opinion,$user);
+>>>>>>> 886cc1d690b2efe158a3aa1fe0483ae1fcbeeb31
     if ($error) {
       print "Can't give opinion because: $error";
     } 
