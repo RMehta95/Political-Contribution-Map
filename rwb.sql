@@ -55,6 +55,24 @@ create table rwb_users (
 );
 
 
+
+--
+-- the list of things an invited user can do in the system
+-- and temporary key associated with new account registration
+--
+CREATE TABLE rwb_registration (
+-- randomly generated alphanumeric string length 10
+  tempkey VARCHAR(64) NOT NULL,
+-- associated permission
+  action VARCHAR(64) NOT NULL,
+
+-- user who is sending invite
+  referer VARCHAR(64) NOT NULL,
+
+  constraint reg_unique UNIQUE(tempkey,action)
+
+);
+
 --
 -- the list of things that a user can do on the system
 --

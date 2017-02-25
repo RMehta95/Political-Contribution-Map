@@ -77,8 +77,8 @@ use Time::ParseDate;
 #
 # You need to override these for access to your database
 #
-my $dbuser="jam697";
-my $dbpasswd="zcg32gtOI";
+my $dbuser="rcm412";
+my $dbpasswd="zpO11Tejj";
 
 
 #
@@ -106,7 +106,7 @@ my $inputdebugcookiecontent = cookie($debugcookiename);
 my $mylocationcookiecontent = cookie($locationcookie);
 
 #
-# Will be filled in as we process the cookies and paramters
+# Will be filled in as we process the cookies and parameters
 #
 my $outputcookiecontent = undef;
 my $outputdebugcookiecontent = undef;
@@ -121,6 +121,13 @@ my $logincomplain=0;
 #
 my $action;
 my $run;
+
+# Temporary key used for validation of invitation from another user
+my $temp;
+
+if (defined(param("temp"))) {
+  $temp = param("temp");
+}
 
 
 if (defined(param("act"))) {
@@ -151,6 +158,7 @@ if (defined(param("debug"))) {
     # debug default from script
   }
 }
+
 
 $outputdebugcookiecontent=$debug;
 
@@ -543,7 +551,7 @@ if ($action eq "invite-user") {
           my $from = 'rcm412@murphy.wot.eecs.northwestern.edu';
           my $subject = 'Invitation to Register an Account';
           my @restrict_permissions = param('restrict_permissions');
-          my $invitation_permissions = join('+',@restrict_permissions);
+          #my $invitation_permissions = join('+',@restrict_permissions);
 
           # Generate alphanumeric string of length 10
           my $alphanumeric = '';
@@ -552,9 +560,15 @@ if ($action eq "invite-user") {
            $alphanumeric .= $characters[int(rand(@characters))]
           }
 
+
+          # Insert alphanumeric key into rwb_registration with associated permissions
+          foreach my $p (@restrict_permissions) {
+            InsertTemp($alphanumeric,$p,$user);
+          }
+
           # Create one time link and embed in message
-          my $url = "http://murphy.wot.eecs.northwestern.edu/~bjs782/rwb/rwb.pl?act=unique-reg&temp=".$alphanumeric; #"&permissions=".$invitation_permissions.
-          my $message = 'Please register your new account at ' . $url;
+          my $url = "http://murphy.wot.eecs.northwestern.edu/~rcm412/rwb/rwb.pl?act=unique-reg&temp=".$alphanumeric; #"&permissions=".$invitation_permissions.
+          my $message = "Hi $name,\n\n Please register your new account at $url.";
 
           open(MAIL, "|/usr/sbin/sendmail -t") or die "Error sending mail\n";
            
@@ -566,7 +580,7 @@ if ($action eq "invite-user") {
           print MAIL $message;
 
           close(MAIL);
-          print "Email Sent Successfully\n";
+          print "Email sent successfully\n";
 
     }
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
@@ -582,35 +596,37 @@ if ($action eq "invite-user") {
 #
 #
 if ($action eq "unique-reg") {
-#   below line should be changed to if temp key exists in new table of temp keys, users, names, and permissions
-  if (!UserCan($user,"add-users") && !UserCan($user,"manage-users")) {
-    print h2('Please request a new temporary link.');
+  if (!ValidTemp($temp)) {
+    print h2('This link is no longer valid.');
   } else {
     if (!$run) {
       print start_form(-name=>'CreateAccount'),
       h2('Create Account'),
       "Name: ", textfield(-name=>'name'),
       p,
-        "Email: ", textfield(-name=>'email'),
+      "Email: ", textfield(-name=>'email'),
       p,
       "Password: ", textfield(-name=>'password'),
-        p,
-          hidden(-name=>'run',-default=>['1']),
-      hidden(-name=>'act',-default=>['add-user']),
-        submit,
-          end_form,
-            hr;
+      p,
+      hidden(-name=>'run',-default=>['1']),
+      hidden(-name=>'act',-default=>['unique-reg']),
+      hidden(-name=>'temp',-default=>$temp),
+      submit,
+      end_form,
+      hr;
      } else {
-#       my $name=param('name');
-#       my $email=param('email');
-#       my $password=param('password');
-#       my $error;
-#       $error=UserAdd($name,$password,$email,$user);
-#       if ($error) {
-#   print "Can't add user because: $error";
-#       } else {
-#   print "Added user $name $email as referred by $user\n";
-#       }
+        my $name=param('name');
+        my $email=param('email');
+        my $password=param('password');
+        my $tempkey=param('temp');
+        my $error;
+
+        $error=CreateAccount($name,$email,$password,$tempkey);
+        if ($error) {
+        print "Can't add user because: $error";
+        } else {
+        print "You have successfully created an account\n";
+        }
      }
    }
   print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
@@ -676,18 +692,18 @@ if ($action eq "add-user") {
   } else {
     if (!$run) {
       print start_form(-name=>'AddUser'),
-	h2('Add User'),
-	  "Name: ", textfield(-name=>'name'),
-	    p,
-	      "Email: ", textfield(-name=>'email'),
-		p,
-		  "Password: ", textfield(-name=>'password'),
-		    p,
-		      hidden(-name=>'run',-default=>['1']),
-			hidden(-name=>'act',-default=>['add-user']),
-			  submit,
-			    end_form,
-			      hr;
+      h2('Add User'),
+      "Name: ", textfield(-name=>'name'),
+      p,
+      "Email: ", textfield(-name=>'email'),
+      p,
+      "Password: ", textfield(-name=>'password'),
+      p,
+      hidden(-name=>'run',-default=>['1']),
+      hidden(-name=>'act',-default=>['add-user']),
+      submit,
+      end_form,
+      hr;
     } else {
       my $name=param('name');
       my $email=param('email');
@@ -721,14 +737,14 @@ if ($action eq "delete-user") {
       # Generate the add form.
       #
       print start_form(-name=>'DeleteUser'),
-	h2('Delete User'),
-	  "Name: ", textfield(-name=>'name'),
-	    p,
-	      hidden(-name=>'run',-default=>['1']),
-		hidden(-name=>'act',-default=>['delete-user']),
-		  submit,
-		    end_form,
-		      hr;
+      h2('Delete User'),
+      "Name: ", textfield(-name=>'name'),
+      p,
+      hidden(-name=>'run',-default=>['1']),
+      hidden(-name=>'act',-default=>['delete-user']),
+      submit,
+      end_form,
+      hr;
     } else {
       my $name=param('name');
       my $error;
@@ -1132,6 +1148,59 @@ sub ValidUser {
     return $col[0]>0;
   }
 }
+
+#
+#
+# Check to see if temporary key for registration exists
+#
+#
+#
+sub ValidTemp {
+  my ($tempkey)=@_;
+  my @col;
+  eval {@col=ExecSQL($dbuser,$dbpasswd, "select count(*) from rwb_registration where tempkey=?","COL",$tempkey);};
+  if ($@) {
+    return 0;
+  } else {
+    return $col[0]>0;
+  }
+}
+
+#
+#
+# Insert temporary key into rwb_registration
+#
+#
+#
+sub InsertTemp {
+  my @rows;
+  eval {
+    @rows = ExecSQL($dbuser, $dbpasswd, "insert into rwb_registration (tempkey,action,referer) values (?,?,?)",undef, @_)
+  };
+  return $@;
+}
+
+
+#
+#
+# Create account and add permissions based on temp key 
+#
+#
+#
+sub CreateAccount {
+  my ($name,$email,$password,$tempkey)=@_;
+
+  eval { 
+    my @referer = ExecSQL($dbuser,$dbpasswd,"select referer from rwb_registration where tempkey = ?","COL", $tempkey);
+    UserAdd($name,$password,$email,$referer[0]);
+    my @col = ExecSQL($dbuser,$dbpasswd,"select action from rwb_registration where tempkey = ?","COL", $tempkey);
+    foreach my $p (@col) {GiveUserPerm($name,$p)};
+    ExecSQL($dbuser,$dbpasswd,"delete from rwb_registration where tempkey=?", undef, $tempkey);
+  };
+
+  return $@;
+}
+
 
 #
 #
