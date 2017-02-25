@@ -444,7 +444,6 @@ if ($action eq "near") {
   else {
     $cycle = substr($cycle, 0, -1);
   }
-#  $cycle = "1112" if !defined($cycle);
 
   if (!defined($whatparam) || $whatparam eq "all") {
     %what = ( committees => 1,
@@ -498,7 +497,14 @@ if ($action eq "near") {
   }
 }
 
-
+#
+# INVITE-USER
+#
+# User Invite functionality
+#
+#
+#
+#
 if ($action eq "invite-user") {
   if (!UserCan($user,"invite-users")) {
      print h2('You do not have the required permissions to invite users.'); }
@@ -510,7 +516,7 @@ if ($action eq "invite-user") {
               splice(@permissions,$i,1);
             }
           }
-          print start_form(-name=>'InviteUser',),#-action=>'/cgi/sendmail.pl',method=>'POST'),
+          print start_form(-name=>'InviteUser',),
           h2('Invite User'),
           "Name: ", textfield(-name=>'name'),
           p,
@@ -536,12 +542,21 @@ if ($action eq "invite-user") {
           my $to = param('email');
           my $from = 'rcm412@murphy.wot.eecs.northwestern.edu';
           my $subject = 'Invitation to Register an Account';
-          my $url = 'DEEZ NUTS'; #int(rand(1000000));
-          my $message = 'Please register your new account at ' . $url;
           my @restrict_permissions = param('restrict_permissions');
-          my $invitation_permissions = join(',',@restrict_permissions);
-           
-          open(MAIL, "|/usr/sbin/sendmail -t");
+          my $invitation_permissions = join('+',@restrict_permissions);
+
+          # Generate alphanumeric string of length 10
+          my $alphanumeric = '';
+          my @characters = ('A'..'Z','a'..'z',0..9);
+          for my $i (0..9) {
+           $alphanumeric .= $characters[int(rand(@characters))]
+          }
+
+          # Create one time link and embed in message
+          my $url = "http://murphy.wot.eecs.northwestern.edu/~bjs782/rwb/rwb.pl?act=unique-reg&temp=".$alphanumeric; #"&permissions=".$invitation_permissions.
+          my $message = 'Please register your new account at ' . $url;
+
+          open(MAIL, "|/usr/sbin/sendmail -t") or die "Error sending mail\n";
            
           # Email Header
           print MAIL "To: $to\n";
@@ -552,21 +567,64 @@ if ($action eq "invite-user") {
 
           close(MAIL);
           print "Email Sent Successfully\n";
-    
-          # my $error;
-          # $error=UserInvite($name,$email,$from,$to,$address,$subject,$body,$user);
-          # if ($error) {
-          #   print "Can't invite user because: $error";
-          # } else {
-          #   print "Invited user $name $email\n";
-          # }
+
     }
     print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
 }
 
+#
+# UNIQUE-REG
+#
+# Temporary create account from link
+#
+#
+#
+#
+if ($action eq "unique-reg") {
+#   below line should be changed to if temp key exists in new table of temp keys, users, names, and permissions
+  if (!UserCan($user,"add-users") && !UserCan($user,"manage-users")) {
+    print h2('Please request a new temporary link.');
+  } else {
+    if (!$run) {
+      print start_form(-name=>'CreateAccount'),
+      h2('Create Account'),
+      "Name: ", textfield(-name=>'name'),
+      p,
+        "Email: ", textfield(-name=>'email'),
+      p,
+      "Password: ", textfield(-name=>'password'),
+        p,
+          hidden(-name=>'run',-default=>['1']),
+      hidden(-name=>'act',-default=>['add-user']),
+        submit,
+          end_form,
+            hr;
+     } else {
+#       my $name=param('name');
+#       my $email=param('email');
+#       my $password=param('password');
+#       my $error;
+#       $error=UserAdd($name,$password,$email,$user);
+#       if ($error) {
+#   print "Can't add user because: $error";
+#       } else {
+#   print "Added user $name $email as referred by $user\n";
+#       }
+     }
+   }
+  print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
+}
 
+
+#
+# GIVE-OPINION-DATA
+#
 # Provide opinion data for the user that is logged in
+#
+#
+#
+#
 if ($action eq "give-opinion-data") {
   if (!$run) {
     print start_form(-name=>'GiveOpinion'),
@@ -601,6 +659,8 @@ if ($action eq "give-opinion-data") {
 if ($action eq "give-cs-ind-data") {
   print h2("Giving Crowd-sourced Individual Geolocations Is Unimplemented");
 }
+
+
 
 #
 # ADD-USER
@@ -1073,7 +1133,6 @@ sub ValidUser {
   }
 }
 
-
 #
 #
 # Check to see if user can do some action
@@ -1090,10 +1149,6 @@ sub UserCan {
     return $col[0]>0;
   }
 }
-
-
-
-
 
 #
 # Given a list of scalars, or a list of references to lists, generates
