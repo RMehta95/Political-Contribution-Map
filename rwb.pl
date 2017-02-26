@@ -583,8 +583,8 @@ if ($action eq "invite-user") {
           print "Email sent successfully\n";
 
     }
-    print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
   }
+  print "<p><a href=\"rwb.pl?act=base&run=1\">Return</a></p>";
 }
 
 #
