@@ -121,11 +121,21 @@ UpdateMap = function() {
 
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
-	if (Math.random()>0.5) {
+	console.log("dem agg:" + document.getElementById("demAgg").value)
+	console.log("rep agg:" + document.getElementById("repAgg").value)
+	console.log("test:" + document.getElementById("test").value)
+	console.log("dem ind:" + document.getElementById("demInd").value)
+	console.log("rep ind:" + document.getElementById("repInd").value)
+	console.log("test2: " + document.getElementById("test2").value)
+	if (parseInt(document.getElementById("demAgg").value) > parseInt(document.getElementById("repAgg").value)) {
 		color.css("background-color", "blue");
-	} else {
+		}
+	else if (parseInt(document.getElementById("demAgg").value) < parseInt(document.getElementById("repAgg").value)) {
 		color.css("background-color", "red");
-	}
+		}
+	else {
+		color.css("background-color", "white");
+		}
 
 },
 
@@ -261,7 +271,7 @@ Start = function(location) {
 	$("#color").css("background-color", "white")
 		.html("<b><blink>Waiting for first position</blink></b>");
 
-//
+//test
 // These lines register callbacks.   If the user scrolls the map,
 // zooms the map, etc, then our function "ViewShift" (defined above
 // will be called after the map is redrawn

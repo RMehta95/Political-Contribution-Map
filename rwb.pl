@@ -77,8 +77,8 @@ use Time::ParseDate;
 #
 # You need to override these for access to your database
 #
-my $dbuser="rcm412";
-my $dbpasswd="zpO11Tejj";
+my $dbuser="ril444";
+my $dbpasswd="zfeX4fJ9w";
 
 
 #
@@ -465,6 +465,60 @@ if ($action eq "near") {
 
   if ($what{committees}) {
     my ($str,$error) = Committees($latne,$longne,$latsw,$longsw,$cycle,$format);
+
+    my @demCand;
+    my @demCOM;
+    my @repCand;
+    my @repCOM;
+
+    my $demAgg;
+    my $repAgg;
+    my $test;
+
+    my $latnetemp = $latne;
+    my $longnetemp = $longne;
+    my $latswtemp = $latsw;
+    my $longswtemp = $longsw;
+
+    #@demCand = subDemCandMoney($latne,$longne,$latsw,$longsw,$cycle,$format);
+    eval{
+    @demCand = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_cand where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    @repCand = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_cand where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    @demCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    @repCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+  };
+
+    $demAgg = @demCand[0] + @demCOM[0];
+    $repAgg = @repCand[0] + @repCOM[0];
+    $test = $repAgg + $demAgg;
+
+    my $i;
+    for ($i = 0; $i < 5; $i = $i+1 ){
+      if ($test < 1){
+      my $latnetemp = $latnetemp + 0.1;
+      my $longnetemp = $longnetemp + 0.1;
+      my $latswtemp = $latswtemp - 0.1;
+      my $longswtemp = $longswtemp - 0.1;
+      eval{
+      @demCand = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_cand where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      @repCand = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_cand where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      @demCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      @repCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      };
+      $demAgg = @demCand[0] + @demCOM[0];
+      $repAgg = @repCand[0] + @repCOM[0];
+      $test = $repAgg + $demAgg;
+    }
+    }
+
+
+    print start_form(-id=>'committeeDataForm'),
+           hidden(-id=>'demAgg',-default=>[$demAgg]),
+           hidden(-id=>'repAgg',-default=>[$repAgg]),
+           hidden(-id=>'test', -default=>[$test]),
+             end_form, hr;
+
+
     if (!$error) {
       if ($format eq "table") {
 	print "<h2>Nearby committees</h2>$str";
@@ -485,6 +539,56 @@ if ($action eq "near") {
   }
   if ($what{individuals}) {
     my ($str,$error) = Individuals($latne,$longne,$latsw,$longsw,$cycle,$format);
+
+    my @demInd;
+    my @repInd;
+
+    my $demInd;
+    my $repInd;
+
+    my $latnetemp = $latne;
+    my $longnetemp = $longne;
+    my $latswtemp = $latsw;
+    my $longswtemp = $longsw;
+
+    my $test;
+
+    #@demCand = subDemCandMoney($latne,$longne,$latsw,$longsw,$cycle,$format);
+    eval{
+    @demInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    @repInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    };
+
+    $demInd = @demInd[0];
+    $repInd= @repInd[0];
+
+    $test = $demInd + $repInd;
+
+    my $i;
+    for ($i = 0; $i < 5; $i = $i+1 ){
+      if ($test < 1){
+        my $latnetemp = $latnetemp + 0.1;
+        my $longnetemp = $longnetemp + 0.1;
+        my $latswtemp = $latswtemp - 0.1;
+        my $longswtemp = $longswtemp - 0.1;
+        eval{
+        @demInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+        @repInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      };
+      $demInd = @demInd[0];
+      $repInd= @repInd[0];
+
+      $test = $demInd + $repInd;
+    }
+    }
+
+
+    print start_form(-id=>'individualDataForm'),
+           hidden(-id=>'demInd',-default=>[$demInd]),
+           hidden(-id=>'repInd',-default=>[$repInd]),
+           hidden(-id=>'test2', -default=>[$test]),
+             end_form, hr;
+
     if (!$error) {
       if ($format eq "table") {
 	print "<h2>Nearby individuals</h2>$str";
@@ -898,6 +1002,15 @@ print end_html;
 
 
 #subroutine to return an array that contains all the possible cycle values
+
+#sub sumDemCandMoney{
+#  my ($latne,$longne,$latsw,$longsw,$cycle,$format) = @_;
+#  my @money;
+#    @money = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_cand where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+#      };
+#  return @money;
+#}
+
 sub CycleArray{
   my @cyclearray;
   eval{
