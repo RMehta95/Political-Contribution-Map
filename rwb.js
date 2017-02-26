@@ -89,6 +89,8 @@ UpdateMap = function() {
 // We're consuming the data, so we'll reset the "color"
 // division to white and to indicate that we are updating
 	var color = $("#color");
+	var committeeAgg = $("#committeeAgg");
+	
 	color.css("background-color", "white")
 		.html("<b><blink>Updating Display...</blink></b>");
 
@@ -118,6 +120,7 @@ UpdateMap = function() {
 // When we're done with the map update, we mark the color division as
 // Ready.
 	color.html("Ready");
+	committeeAgg.html(document.getElementById("totalAgg").value))
 
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
@@ -127,6 +130,7 @@ UpdateMap = function() {
 	console.log("dem ind:" + document.getElementById("demInd").value)
 	console.log("rep ind:" + document.getElementById("repInd").value)
 	console.log("test2: " + document.getElementById("test2").value)
+
 	if (parseInt(document.getElementById("demAgg").value) > parseInt(document.getElementById("repAgg").value)) {
 		color.css("background-color", "blue");
 		}

@@ -350,6 +350,10 @@ if ($action eq "base") {
   #
   # And something to color (Red, White, or Blue)
   #
+  print "<div id = \"committeeAgg\" style=\"width:100\%\";> </div>";
+  print "<div id = \"individualsAgg\" style=\"width:100\%\";> </div>";
+  print "<div id = \"opinionsAgg\" style=\"width:100\%\";> </div>";
+
   print "<div id=\"color\" style=\"width:100\%; height:10\%\"></div>";
 
   #
@@ -474,6 +478,7 @@ if ($action eq "near") {
     my $demAgg;
     my $repAgg;
     my $test;
+    my $totalAgg;
 
     my $latnetemp = $latne;
     my $longnetemp = $longne;
@@ -490,6 +495,9 @@ if ($action eq "near") {
 
     $demAgg = @demCand[0] + @demCOM[0];
     $repAgg = @repCand[0] + @repCOM[0];
+
+
+
     $test = $repAgg + $demAgg;
 
     my $i;
@@ -507,6 +515,14 @@ if ($action eq "near") {
       };
       $demAgg = @demCand[0] + @demCOM[0];
       $repAgg = @repCand[0] + @repCOM[0];
+
+      if ($demAgg > $repAgg){
+        $totalAgg = $demAgg - $repAgg;
+      }
+      else{
+        $totalAgg = $repAgg - $demAgg;
+      }
+
       $test = $repAgg + $demAgg;
     }
     }
@@ -516,6 +532,7 @@ if ($action eq "near") {
            hidden(-id=>'demAgg',-default=>[$demAgg]),
            hidden(-id=>'repAgg',-default=>[$repAgg]),
            hidden(-id=>'test', -default=>[$test]),
+           hidden(-id=>'totalAgg', -default=>[$totalAgg]),
              end_form, hr;
 
 
@@ -599,6 +616,25 @@ if ($action eq "near") {
   }
   if ($what{opinions}) {
     my ($str,$error) = Opinions($latne,$longne,$latsw,$longsw,$cycle,$format);
+
+    my $opinionsArray;
+    my $average;
+    my $stdDev;
+    my $sqtotal;
+
+    eval{
+      @opinionsArray = ExecSQL($dbuser, $dbpasswd, "select color from rwb_opinions where latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+
+    };
+
+    $average = sum(@opinionsArray)/@opinionsArray;
+
+    foreach (@opinionsArray) {
+      $sqtotal += ($average - $_)**2;
+    }
+    $stdDev = ($sqtotal/(@opinionsArray -1)) ** .5;
+
+
     if (!$error) {
       if ($format eq "table") {
 	print "<h2>Nearby opinions</h2>$str";
@@ -637,7 +673,7 @@ if ($action eq "invite-user") {
           "Permissions:",
           br,
           checkbox_group(
-            -name=>'restrict_permissions', 
+            -name=>'restrict_permissions',
             -values=>\@permissions,
             -linebreak=>'true',
             ),
@@ -647,7 +683,7 @@ if ($action eq "invite-user") {
           submit,
           end_form,
           hr;
-    } 
+    }
     else {
           #!/usr/bin/perl
           my $name = param('name');
@@ -675,7 +711,7 @@ if ($action eq "invite-user") {
           my $message = "Hi $name,\n\n Please register your new account at $url.";
 
           open(MAIL, "|/usr/sbin/sendmail -t") or die "Error sending mail\n";
-           
+
           # Email Header
           print MAIL "To: $to\n";
           print MAIL "From: $from\n";
@@ -749,7 +785,7 @@ if ($action eq "give-opinion-data") {
   if (!$run) {
     print start_form(-name=>'GiveOpinion'),
       h2('Give Opinion from Your Location'),
-        "-1 for Republican, 0 for Neutral, 1 for Democrat: ", 
+        "-1 for Republican, 0 for Neutral, 1 for Democrat: ",
       textfield(-name=>'opinion'),
       p,
       hidden(-name=>'run', -default=>['1']),
@@ -759,16 +795,16 @@ if ($action eq "give-opinion-data") {
       hr;
       }
   else {
-    my $lat; 
-    my $long; 
-    if (defined($mylocationcookiecontent)) { 
+    my $lat;
+    my $long;
+    if (defined($mylocationcookiecontent)) {
       ($lat,$long) = split(/\//,$mylocationcookiecontent);
     }
     my $opinion = param("opinion");
     my $error=GiveOpinion($lat,$long,$opinion,$user);
     if ($error) {
       print "Can't give opinion because: $error";
-    } 
+    }
     else {
       print "$user has entered opinion $opinion at latitude $lat and longitude $long";
     }
@@ -1296,14 +1332,14 @@ sub InsertTemp {
 
 #
 #
-# Create account and add permissions based on temp key 
+# Create account and add permissions based on temp key
 #
 #
 #
 sub CreateAccount {
   my ($name,$email,$password,$tempkey)=@_;
 
-  eval { 
+  eval {
     my @referer = ExecSQL($dbuser,$dbpasswd,"select referer from rwb_registration where tempkey = ?","COL", $tempkey);
     UserAdd($name,$password,$email,$referer[0]);
     my @col = ExecSQL($dbuser,$dbpasswd,"select action from rwb_registration where tempkey = ?","COL", $tempkey);
