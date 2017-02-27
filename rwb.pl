@@ -569,6 +569,7 @@ if ($action eq "near") {
     my $longswtemp = $longsw;
 
     my $test;
+    my $indAgg;
 
     #@demCand = subDemCandMoney($latne,$longne,$latsw,$longsw,$cycle,$format);
     eval{
@@ -596,6 +597,13 @@ if ($action eq "near") {
       $repInd= @repInd[0];
 
       $test = $demInd + $repInd;
+
+      if ($demInd > $repInd){
+        $indAgg = $demInd - $repInd;
+      }
+      else{
+        $indAgg = $repInd - $demInd;
+      }
     }
     }
 
@@ -603,7 +611,7 @@ if ($action eq "near") {
     print start_form(-id=>'individualDataForm'),
            hidden(-id=>'demInd',-default=>[$demInd]),
            hidden(-id=>'repInd',-default=>[$repInd]),
-           hidden(-id=>'test2', -default=>[$test]),
+           hidden(-id=>'indAgg', -default=>[$indAgg]),
              end_form, hr;
 
     if (!$error) {
@@ -636,6 +644,11 @@ if ($action eq "near") {
     }
     $stdDev = ($sqtotal/(@opinionsArray -1)) ** .5;
 
+    print start_form(-id=>'opinionsDataForm'),
+           hidden(-id=>'average',-default=>[$average]),
+           hidden(-id=>'stdDev',-default=>[$stdDev]),
+
+             end_form, hr;
 
     if (!$error) {
       if ($format eq "table") {

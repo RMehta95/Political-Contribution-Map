@@ -90,7 +90,9 @@ UpdateMap = function() {
 // division to white and to indicate that we are updating
 	var color = $("#color");
 	var committeeAgg = $("#committeeAgg");
-	
+	var committeeAgg = $("#individualsAgg");
+	var committeeAgg = $("#opinionsAgg");
+
 	color.css("background-color", "white")
 		.html("<b><blink>Updating Display...</blink></b>");
 
@@ -120,7 +122,10 @@ UpdateMap = function() {
 // When we're done with the map update, we mark the color division as
 // Ready.
 	color.html("Ready");
-	committeeAgg.html(document.getElementById("totalAgg").value))
+	committeeAgg.html("Committee Aggregate:" + document.getElementById("totalAgg").value);
+	individualsAgg.html("Individual Average:" + document.getElementById("indAgg").value );
+	opinionsAgg.html("opinions Average:" + document.getElementById("average").value + "      " + "std dev:" + document.getElementById("stdDev").value);
+
 
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
@@ -140,6 +145,36 @@ UpdateMap = function() {
 	else {
 		color.css("background-color", "white");
 		}
+
+	if (parseInt(document.getElementById("demAgg").value) > parseInt(document.getElementById("repAgg").value)) {
+		committeeAgg.css("background-color", "blue");
+		}
+	else if (parseInt(document.getElementById("demAgg").value) < parseInt(document.getElementById("repAgg").value)) {
+		committeeAgg.css("background-color", "red");
+		}
+	else {
+		committeeAgg.css("background-color", "white");
+		}
+
+	if (parseInt(document.getElementById("demInd").value) > parseInt(document.getElementById("repInd").value)) {
+			individualsAgg.css("background-color", "blue");
+			}
+	else if (parseInt(document.getElementById("demInd").value) < parseInt(document.getElementById("repInd").value)) {
+			individualsAgg.css("background-color", "red");
+			}
+	else {
+			individualsAgg.css("background-color", "white");
+			}
+
+	if (parseInt(document.getElementById("average").value) > 0) {
+			opinionsAgg.css("background-color", "blue");
+			}
+	else if (parseInt(document.getElementById("average").value) < 0) {
+			opinionsAgg.css("background-color", "red");
+			}
+	else {
+			opinionsAgg.css("background-color", "white");
+			}
 
 },
 
