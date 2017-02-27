@@ -350,11 +350,11 @@ if ($action eq "base") {
   #
   # And something to color (Red, White, or Blue)
   #
-  print "<div id = \"committeeAgg\" style=\"width:100\%\";> </div>";
-  print "<div id = \"individualsAgg\" style=\"width:100\%\";> </div>";
-  print "<div id = \"opinionsAgg\" style=\"width:100\%\";> </div>";
+  print "<div id = \"committeeAgg\" style=\"width:100\%; height:5\%\"> </div>";
+  print "<div id = \"individualsAgg\" style=\"width:100\%; height:5\%\"> </div>";
+  print "<div id = \"opinionsAgg\" style=\"width:100\%; height:5\%\"> </div>";
 
-  print "<div id=\"color\" style=\"width:100\%; height:10\%\"></div>";
+  print "<div id=\"color\" style=\"width:100\%; height:5\%\"></div>";
 
   #
   #
@@ -606,7 +606,6 @@ if ($action eq "near") {
       }
     }
     }
-
 
     print start_form(-id=>'individualDataForm'),
            hidden(-id=>'demInd',-default=>[$demInd]),
