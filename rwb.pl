@@ -622,8 +622,10 @@ if ($action eq "near") {
     my $stdDev;
     my $sqtotal;
 
+    my @opinionsArray;
+
     eval{
-      @opinionsArray = ExecSQL($dbuser, $dbpasswd, "select color from rwb_opinions where latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
+      @opinionsArray = ExecSQL($dbuser, $dbpasswd, "select color from rwb_opinions where latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
 
     };
 
