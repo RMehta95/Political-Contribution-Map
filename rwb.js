@@ -134,13 +134,13 @@ UpdateMap = function() {
 
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
-	if (!document.getElementById("demAgg").value && !document.getElementById("repAgg").value){
+	if (!document.getElementById("demAgg") && !document.getElementById("repAgg")){
 		committeeAgg.css("background-color", "white");
 	}
-	else if (!document.getElementById("demAgg").value && document.getElementById("repAgg").value){
+	else if (!document.getElementById("demAgg")&& document.getElementById("repAgg")){
 		committeeAgg.css("background-color", "red");
 	}
-	else if (document.getElementById("demAgg").value && !document.getElementById("repAgg").value){
+	else if (document.getElementById("demAgg") && !document.getElementById("repAgg")){
 		committeeAgg.css("background-color", "blue");
 	}
 	else if (parseInt(document.getElementById("demAgg").value) > parseInt(document.getElementById("repAgg").value)) {

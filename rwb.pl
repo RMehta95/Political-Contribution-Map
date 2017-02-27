@@ -638,10 +638,10 @@ if ($action eq "near") {
 
     $average = sum(@opinionsArray)/@opinionsArray;
 
-    foreach (@opinionsArray) {
-      $sqtotal += ($average - $_)**2;
-    }
-    $stdDev = ($sqtotal/(@opinionsArray -1)) ** .5;
+#   foreach (@opinionsArray) {
+#      $sqtotal += ($average - $_)**2;
+#    }
+#    $stdDev = ($sqtotal/(@opinionsArray -1)) ** .5;
 
     print start_form(-id=>'opinionsDataForm'),
            hidden(-id=>'average',-default=>[$average]),
