@@ -89,12 +89,25 @@ UpdateMap = function() {
 // We're consuming the data, so we'll reset the "color"
 // division to white and to indicate that we are updating
 	var color = $("#color");
+	var committee = $("Committee");
+	var candidate = $("Candidate");
+	var individual = $("Individual");
+	var opinion = $("Opinion");
 	var committeeAgg = $("#committeeAgg");
 	var individualsAgg = $("#individualsAgg");
 	var opinionsAgg = $("#opinionsAgg");
+	var totalAgg = $("#totalAgg");
+	var indAgg = $("#indAgg");
+	var demAgg = $("#demAgg");
+	var repAgg = $("#repAgg");
+	var demInd = $("#demInd");
+	var repInd = $("#repInd");
+	var average = $("#average");
+	var stdDev = $("#stdDev");
 
 	color.css("background-color", "white")
 		.html("<b><blink>Updating Display...</blink></b>");
+
 
 // Remove any existing data markers from the map
 	ClearMarkers();
@@ -103,84 +116,72 @@ UpdateMap = function() {
 // Note that there additional categories here that are
 // commented out...  Those might help with the project...
 //
-	if (document.getElementById("Committee").checked) {
+
+
+	if (committee.is(':checked')) {
 		UpdateMapById("committee_data","COMMITTEE");
 	}
 
-	if (document.getElementById("Candidate").checked) {
+	if (candidate.is(':checked')) {
 		UpdateMapById("candidate_data","CANDIDATE");
 	}
 
-	if (document.getElementById("Individual").checked) {
+	if (individual.is(':checked')) {
 		UpdateMapById("individual_data", "INDIVIDUAL");
 	}
 
-	if (document.getElementById("Opinion").checked) {
+	if (opinion.is(':checked')) {
 		UpdateMapById("opinion_data","OPINION");
 	}
 
 // When we're done with the map update, we mark the color division as
 // Ready.
+var dA = parseInt(demAgg.val());
+var rA = parseInt(repAgg.val());
+var dI = parseInt(demInd.val());
+var rI = parseInt(repInd.val());
+var tAV = parseInt(totalAgg.val());
+var iAV = parseInt(indAgg.val());
+var aV = parseFloat(average.val());
+var sdV = parseFloat(stdDev.val());
+
 	color.html("Ready");
-	if (document.getElementById("totalAgg")){
-		committeeAgg.html("Committee Aggregate:" + document.getElementById("totalAgg").value);
+	if (totalAgg){
+	committeeAgg.html("Committee Aggregate: " + tAV);
 	}
-	if (document.getElementById("indAgg")){
-	individualsAgg.html("Individual Aggregate:" + document.getElementById("indAgg").value );
+	if (indAgg){
+	individualsAgg.html("Individual Aggregate: " + iAV);
 	}
-	if (document.getElementById("average")){
-	opinionsAgg.html("opinions Average:" + document.getElementById("average").value + "      " + "std dev:" + document.getElementById("stdDev").value);
+	if (average){
+	opinionsAgg.html("Opinions => " + "Average: " + aV.toFixed(2) + "  " + "Std Dev: " + sdV.toFixed(2));
 	}
 
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
-	if (!document.getElementById("demAgg") && !document.getElementById("repAgg")){
-		committeeAgg.css("background-color", "white");
+
+	if (dA || rA){
+		dProportion = dA/(dA+rA)*255;
+		rProportion = rA/(dA+rA)*255;
+		committeeAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
 	}
-	else if (!document.getElementById("demAgg")&& document.getElementById("repAgg")){
-		committeeAgg.css("background-color", "red");
-	}
-	else if (document.getElementById("demAgg") && !document.getElementById("repAgg")){
-		committeeAgg.css("background-color", "blue");
-	}
-	else if (parseInt(document.getElementById("demAgg").value) > parseInt(document.getElementById("repAgg").value)) {
-		committeeAgg.css("background-color", "blue");
-		}
-	else if (parseInt(document.getElementById("demAgg").value) < parseInt(document.getElementById("repAgg").value)) {
-		committeeAgg.css("background-color", "red");
-		}
 	else {
 		committeeAgg.css("background-color", "white");
-		}
+	}
 
-console.log(document.getElementById("indAgg").value);
+	if (dI || rI) {
+		dProportion = dI/(dI+rI)*255;
+		rProportion = rI/(dI+rI)*255;
+		individualsAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
+	}
+	else {
+		individualsAgg.css("background-color", "white");
+	}
 
-		if (!document.getElementById("demInd").value && !document.getElementById("repInd").value){
-			individualsAgg.css("background-color", "black");
-		}
-		else if (!document.getElementById("demInd").value && document.getElementById("repInd").value){
-			individualsAgg.css("background-color", "red");
-		}
-		else if (document.getElementById("demInd").value && !document.getElementById("repInd").value){
-			individualsAgg.css("background-color", "blue");
-		}
-		else if (parseInt(document.getElementById("demInd").value) > parseInt(document.getElementById("repInd").value)) {
-			individualsAgg.css("background-color", "blue");
-			}
-		else if (parseInt(document.getElementById("demInd").value) < parseInt(document.getElementById("repInd").value)) {
-			individualsAgg.css("background-color", "red");
-			}
-		else {
-			individualsAgg.css("background-color", "white");
-			}
-		
-		console.log("at this point");
-
-		if(document.getElementById("average")){
-			if (parseInt(document.getElementById("average").value) > 0) {
+		if(aV){
+			if (aV > 0) {
 					opinionsAgg.css("background-color", "blue");
 					}
-			else if (parseInt(document.getElementById("average").value) < 0) {
+			else if (aV < 0) {
 					opinionsAgg.css("background-color", "red");
 					}
 			else {

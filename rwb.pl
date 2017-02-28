@@ -493,8 +493,8 @@ if ($action eq "near") {
     @repCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
   };
 
-    $demAgg = @demCand[0] + @demCOM[0];
-    $repAgg = @repCand[0] + @repCOM[0];
+    $demAgg = $demCand[0] + $demCOM[0];
+    $repAgg = $repCand[0] + $repCOM[0];
 
 
 
@@ -513,8 +513,8 @@ if ($action eq "near") {
       @demCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
       @repCOM = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.comm_to_comm where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
       };
-      $demAgg = @demCand[0] + @demCOM[0];
-      $repAgg = @repCand[0] + @repCOM[0];
+      $demAgg = $demCand[0] + $demCOM[0];
+      $repAgg = $repCand[0] + $repCOM[0];
 
       if ($demAgg > $repAgg){
         $totalAgg = $demAgg - $repAgg;
@@ -577,8 +577,8 @@ if ($action eq "near") {
     @repInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
     };
 
-    $demInd = @demInd[0];
-    $repInd= @repInd[0];
+    $demInd = $demInd[0];
+    $repInd= $repInd[0];
 
     $test = $demInd + $repInd;
 
@@ -593,8 +593,8 @@ if ($action eq "near") {
         @demInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('dem','Dem','DEM') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
         @repInd = ExecSQL($dbuser, $dbpasswd, "select sum(transaction_amnt) from cs339.COMMITTEE_master natural join cs339.cmte_id_to_geo natural join cs339.Individual where CMTE_PTY_AFFILIATION in ('rep','Rep','REP', 'GOP') and cycle in ($cycle) and latitude>($latswtemp) and latitude<($latnetemp) and longitude>($longswtemp) and longitude<($longnetemp)","COL");
       };
-      $demInd = @demInd[0];
-      $repInd= @repInd[0];
+      $demInd = $demInd[0];
+      $repInd= $repInd[0];
 
       $test = $demInd + $repInd;
 
