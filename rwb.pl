@@ -77,8 +77,8 @@ use Time::ParseDate;
 #
 # You need to override these for access to your database
 #
-my $dbuser="ril444";
-my $dbpasswd="zfeX4fJ9w";
+my $dbuser="jam697";
+my $dbpasswd="zcg32gtOI";
 
 
 #
@@ -351,7 +351,7 @@ if ($action eq "base") {
   # And something to color (Red, White, or Blue)
   #
   print "<div id = \"committeeAgg\" style=\"width:100\%; height:5\%\"> </div>";
-  print "<div id = \"individualsAgg\" style=\"width:100\%; height:5\%\"> </div>";
+  print "<div id = \"individualsAgg\" style=\"width:100\%; height:5\%\">  </div>";
   print "<div id = \"opinionsAgg\" style=\"width:100\%; height:5\%\"> </div>";
 
   print "<div id=\"color\" style=\"width:100\%; height:5\%\"></div>";
@@ -624,28 +624,39 @@ if ($action eq "near") {
   if ($what{opinions}) {
     my ($str,$error) = Opinions($latne,$longne,$latsw,$longsw,$cycle,$format);
 
+    #use float;
     my $opinionsArray;
-    my $average;
-    my $stdDev;
-    my $sqtotal;
+    my @average;
+
+    my @stdDev;
+#    my $sqtotal;
 
     my @opinionsArray;
 
     eval{
-      @opinionsArray = ExecSQL($dbuser, $dbpasswd, "select color from rwb_opinions where latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
-
+      @average = ExecSQL($dbuser, $dbpasswd, "select avg(color) from rwb_opinions where latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
     };
-
-    $average = sum(@opinionsArray)/@opinionsArray;
+    print "average";
+    print @average;
+ # my $rounded = sprintf("%.3f", $number);
+   # print sprintf("%.3f", $average);
+    eval{
+      @stdDev = ExecSQL($dbuser, $dbpasswd, "select stddev(color) from rwb_opinions where latitude>($latsw) and latitude<($latne) and longitude>($longsw) and longitude<($longne)","COL");
+    };
+    print "stdDev";
+    print @stdDev;
+#    print $stdDev;
+#    $average = sum(@opinionsArray)/@opinionsArray;
 
 #   foreach (@opinionsArray) {
 #      $sqtotal += ($average - $_)**2;
 #    }
 #    $stdDev = ($sqtotal/(@opinionsArray -1)) ** .5;
+   # $average = AverageSub(@opinionsArray)
 
     print start_form(-id=>'opinionsDataForm'),
-           hidden(-id=>'average',-default=>[$average]),
-           hidden(-id=>'stdDev',-default=>[$stdDev]),
+           hidden(-id=>'average',-default=>[@average]),
+           hidden(-id=>'stdDev',-default=>[@stdDev]),
 
              end_form, hr;
 
@@ -1068,7 +1079,6 @@ sub CycleArray{
   };
   return @cyclearray;
 }
-
 
 
 

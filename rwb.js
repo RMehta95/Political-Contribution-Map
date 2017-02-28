@@ -173,6 +173,8 @@ console.log(document.getElementById("indAgg").value);
 		else {
 			individualsAgg.css("background-color", "white");
 			}
+		
+		console.log("at this point");
 
 		if(document.getElementById("average")){
 			if (parseInt(document.getElementById("average").value) > 0) {
