@@ -136,21 +136,21 @@ UpdateMap = function() {
 
 // When we're done with the map update, we mark the color division as
 // Ready.
-var dA = parseInt(demAgg.val());
-var rA = parseInt(repAgg.val());
-var dI = parseInt(demInd.val());
-var rI = parseInt(repInd.val());
-var tAV = parseInt(totalAgg.val());
-var iAV = parseInt(indAgg.val());
+var dA = parseInt(demAgg.val(),10);
+var rA = parseInt(repAgg.val(),10);
+var dI = parseInt(demInd.val(),10);
+var rI = parseInt(repInd.val(),10);
+var tAV = parseInt(totalAgg.val(),10);
+var iAV = parseInt(indAgg.val(),10);
 var aV = parseFloat(average.val());
 var sdV = parseFloat(stdDev.val());
 
 	color.html("Ready");
 	if (totalAgg){
-	committeeAgg.html("Committee Aggregate: " + tAV);
+	committeeAgg.html("Committee Aggregate: " + totalAgg.val());
 	}
 	if (indAgg){
-	individualsAgg.html("Individual Aggregate: " + iAV);
+	individualsAgg.html("Individual Aggregate: " + indAgg.val());
 	}
 	if (average){
 	opinionsAgg.html("Opinions => " + "Average: " + aV.toFixed(2) + "  " + "Std Dev: " + sdV.toFixed(2));
@@ -159,36 +159,58 @@ var sdV = parseFloat(stdDev.val());
 // The hand-out code doesn't actually set the color according to the data
 // (that's the student's job), so we'll just assign it a random color for now
 
-	if (dA || rA){
+	if (dA>0 && rA>0){
 		console.log("dA is " + dA);
 		console.log("rA is " + rA);
-		var dAP = dA/(dA+rA)*255;
-		var rAP = rA/(dA+rA)*255;
+		var dAP = Math.round(dA/(dA+rA)*255);
+		var rAP = Math.round(rA/(dA+rA)*255);
 		console.log("dProp is " + dAP);
-		committeeAgg.css("background-color", "rgb("+dAP+",0,"+rAP+")");
+		if (dA>rA) {
+			committeeAgg.css("background-color", "rgb(0,0,"+dAP+")");
+		} else {
+			committeeAgg.css("background-color", "rgb("+rAP+",0,0)");
+		}
+	}
+	else if (dA>0) {
+		committeeAgg.css("background-color", "blue");
+	}
+	else if (rA>0) {
+		committeeAgg.css("background-color", "red");
 	}
 	else {
 		committeeAgg.css("background-color", "white");
 	}
 
-	if (dI || rI) {
+	if (dI>0 && rI>0) {
 		console.log("dI is " + dI);
 		console.log("rI is " + rI);
 		console.log("dProp is " + dIP);
-		var dIP = dI/(dI+rI)*255;
-		var rIP = rI/(dI+rI)*255;
-		individualsAgg.css("background-color", "rgb("+dIP+",0,"+rIP+")");
+		var dIP = Math.round(dI/(dI+rI)*255);
+		var rIP = Math.round(rI/(dI+rI)*255);
+		if (dI>rI) {
+			individualsAgg.css("background-color", "rgb(0,0,"+dIP+")");
+		} else {
+			individualsAgg.css("background-color", "rgb("+rIP+",0,0)");
+		}
+
+	}
+	else if (dI>0) {
+		individualsAgg.css("background-color", "blue");
+	}
+	else if (rI>0) {
+		individualsAgg.css("background-color", "red");
 	}
 	else {
 		individualsAgg.css("background-color", "white");
 	}
 
 		if(aV){
+			aVS= Math.round(aV*255);
 			if (aV > 0) {
-					opinionsAgg.css("background-color", "blue");
+					opinionsAgg.css("background-color", "rgb(0,0,"+aVS+")");
 					}
 			else if (aV < 0) {
-					opinionsAgg.css("background-color", "red");
+					opinionsAgg.css("background-color", "rgb("+aVS+",0,0)");
 					}
 			else {
 					opinionsAgg.css("background-color", "white");
