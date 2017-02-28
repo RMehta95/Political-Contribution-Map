@@ -160,20 +160,24 @@ var sdV = parseFloat(stdDev.val());
 // (that's the student's job), so we'll just assign it a random color for now
 
 	if (dA || rA){
-		dProportion = dA/(dA+rA)*255;
-		rProportion = rA/(dA+rA)*255;
-		console.log("dProp is " + dProportion);
-		committeeAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
+		console.log("dA is " + dA);
+		console.log("rA is " + rA);
+		var dAP = dA/(dA+rA)*255;
+		var rAP = rA/(dA+rA)*255;
+		console.log("dProp is " + dAP);
+		committeeAgg.css("background-color", "rgb("+dAP+",0,"+rAP+")");
 	}
 	else {
 		committeeAgg.css("background-color", "white");
 	}
 
 	if (dI || rI) {
-		console.log("dProp is " + dProportion);
-		dProportion = dI/(dI+rI)*255;
-		rProportion = rI/(dI+rI)*255;
-		individualsAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
+		console.log("dI is " + dI);
+		console.log("rI is " + rI);
+		console.log("dProp is " + dIP);
+		var dIP = dI/(dI+rI)*255;
+		var rIP = rI/(dI+rI)*255;
+		individualsAgg.css("background-color", "rgb("+dIP+",0,"+rIP+")");
 	}
 	else {
 		individualsAgg.css("background-color", "white");
