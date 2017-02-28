@@ -162,6 +162,7 @@ var sdV = parseFloat(stdDev.val());
 	if (dA || rA){
 		dProportion = dA/(dA+rA)*255;
 		rProportion = rA/(dA+rA)*255;
+		console.log("dProp is " + dProportion);
 		committeeAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
 	}
 	else {
@@ -169,6 +170,7 @@ var sdV = parseFloat(stdDev.val());
 	}
 
 	if (dI || rI) {
+		console.log("dProp is " + dProportion);
 		dProportion = dI/(dI+rI)*255;
 		rProportion = rI/(dI+rI)*255;
 		individualsAgg.css("background-color", "rgb("+dProportion+",0,"+rProportion+")");
